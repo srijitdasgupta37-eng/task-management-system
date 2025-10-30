@@ -1,14 +1,27 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import User
+from django.contrib.auth import authenticate, login, logout
+from .forms import RegisterForm
 
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = RegisterForm()
+    return render(request, 'accounts/register.html', {'form': form})
 
-# Create your views here.
-@login_required
-def dashboard(request):
-    if request.user.role == 'Admin':
-        return render(request, 'accounts/admin_dashboard.html')
-    elif request.user.role == 'Teacher':
-        return render(request, 'accounts/teacher_dashboard.html')
-    elif request.user.role == 'Student':
-        return render(request, 'accounts/student_dashboard.html')
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('task_list')
+    return render(request, 'accounts/login.html')
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')

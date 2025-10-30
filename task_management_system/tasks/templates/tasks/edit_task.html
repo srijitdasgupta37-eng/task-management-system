@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Task</title>
+</head>
+<body>
+    <h2>Edit Task: {{ task.title }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                {% if field.help_text %}
+                    <br><small>{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <br><span style="color: red;">{{ error }}</span>
+                {% endfor %}
+            </p>
+        {% endfor %}
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{% url 'task_list' %}">Back to Task List</a>
+</body>
+</html>
